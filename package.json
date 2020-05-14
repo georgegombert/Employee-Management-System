@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/georgegombert/Employee-Management-System#readme",
   "dependencies": {
+    "chalk": "^4.0.0",
     "console.table": "^0.10.0",
     "inquirer": "^7.1.0",
     "mysql": "^2.18.1"

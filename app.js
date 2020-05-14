@@ -1,5 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const chalk = require('chalk');
+const cTable = require('console.table');
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -9,12 +11,12 @@ const connection = mysql.createConnection({
   database: "myCompany_DB"
 });
 
-connection.connect( (err) => {
+connection.connect(err => {
   if (err) throw err;
   main();
 });
 
-const main = () => {
+function main() {
   console.log("hello working");
   inquirer
     .prompt({
@@ -34,7 +36,7 @@ const main = () => {
     .then(answer => {
       switch (answer.userChoice) {
       case "Add Department":
-        console.log(answer.userChoice);
+        console.log(chalk.inverse(answer.userChoice));
         break;
 
       case "Add Role":
@@ -47,17 +49,39 @@ const main = () => {
 
       case "View Departments":
         console.log(answer.userChoice);
+        viewDepartments();
         break;
 
       case "View Roles":
-        console.log(answer.userChoice);
+        viewRoles();
         break;
       case "View Employees":
-        console.log(answer.userChoice);
+        viewEmployees();
         break;
       case "Exit":
         connection.end(err => console.log("Goodbye"));
         break;
       }
     });
+}
+
+function viewDepartments() {
+  connection.query("SELECT * FROM department", (err, res) => {
+    console.log(res);
+    main();
+  });
+}
+
+function viewRoles() {
+  connection.query("SELECT * FROM role", (err, res) => {
+    console.log(res);
+    main();
+  });
+}
+
+function viewEmployees() {
+  connection.query("SELECT * FROM employee", (err, res) => {
+    console.log(res);
+    main();
+  });
 }
