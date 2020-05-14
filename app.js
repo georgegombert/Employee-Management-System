@@ -41,12 +41,11 @@ function main() {
           break;
 
         case "Add Role":
-          console.log(answer.userChoice);
           addRole();
           break;
 
         case "Add Employee":
-          console.log(answer.userChoice);
+          addEmployee();
           break;
 
         case "View Departments":
@@ -142,6 +141,28 @@ function addRole() {
       connection.query("INSERT INTO role (title, salary) VALUE ('"+answer.roleName.trim()+"','"+answer.roleSalary+"')" ,err => {
         if (err) throw err;
         viewRoles();
+    })
+  });
+}
+
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "firstName",
+        type: "input",
+        message: "What is the first name of the employee?"
+      },
+      {
+        name: "lastName",
+        type: "input",
+        message: "What is the last name of the employee?"
+      }
+    ])
+    .then(answer => {
+      connection.query("INSERT INTO employee (first_name, last_name) VALUE ('"+answer.firstName.trim()+"','"+answer.lastName.trim()+"')" ,err => {
+        if (err) throw err;
+        viewEmployees();
     })
   });
 }
