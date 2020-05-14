@@ -37,12 +37,12 @@ function main() {
     .then(answer => {
       switch (answer.userChoice) {
         case "Add Department":
-          console.log(chalk.inverse(answer.userChoice));
-          addDepartments();
+          addDepartment();
           break;
 
         case "Add Role":
           console.log(answer.userChoice);
+          addRole();
           break;
 
         case "Add Employee":
@@ -110,7 +110,7 @@ function returnHome() {
 
 }
 
-function addDepartments() {
+function addDepartment() {
   inquirer
     .prompt({
       name: "departmentName",
@@ -121,6 +121,27 @@ function addDepartments() {
       connection.query("INSERT INTO department (name) VALUE ('"+answer.departmentName.trim()+"')" ,err => {
         if (err) throw err;
         viewDepartments();
+    })
+  });
+}
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        name: "roleName",
+        type: "input",
+        message: "What is the name of the new role?"
+      },
+      {
+        name: "roleSalary",
+        type: "input",
+        message: "Enter the salary for this role:"
+      }
+    ])
+    .then(answer => {
+      connection.query("INSERT INTO role (title, salary) VALUE ('"+answer.roleName.trim()+"','"+answer.roleSalary+"')" ,err => {
+        if (err) throw err;
+        viewRoles();
     })
   });
 }
