@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const chalk = require('chalk');
 const cTable = require('console.table');
+const testName = "test";
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -37,6 +38,7 @@ function main() {
       switch (answer.userChoice) {
         case "Add Department":
           console.log(chalk.inverse(answer.userChoice));
+          addDepartments();
           break;
 
         case "Add Role":
@@ -106,4 +108,19 @@ function returnHome() {
       }
     });
 
+}
+
+function addDepartments() {
+  inquirer
+    .prompt({
+      name: "departmentName",
+      type: "input",
+      message: "What is the name of the new department?"
+    })
+    .then(answer => {
+      connection.query("INSERT INTO department (name) VALUE ('"+answer.departmentName.trim()+"')" ,err => {
+        if (err) throw err;
+        viewDepartments();
+    })
+  });
 }
