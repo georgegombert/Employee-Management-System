@@ -35,53 +35,75 @@ function main() {
     })
     .then(answer => {
       switch (answer.userChoice) {
-      case "Add Department":
-        console.log(chalk.inverse(answer.userChoice));
-        break;
+        case "Add Department":
+          console.log(chalk.inverse(answer.userChoice));
+          break;
 
-      case "Add Role":
-        console.log(answer.userChoice);
-        break;
+        case "Add Role":
+          console.log(answer.userChoice);
+          break;
 
-      case "Add Employee":
-        console.log(answer.userChoice);
-        break;
+        case "Add Employee":
+          console.log(answer.userChoice);
+          break;
 
-      case "View Departments":
-        console.log(answer.userChoice);
-        viewDepartments();
-        break;
+        case "View Departments":
+          console.log(answer.userChoice);
+          viewDepartments();
+          break;
 
-      case "View Roles":
-        viewRoles();
-        break;
-      case "View Employees":
-        viewEmployees();
-        break;
-      case "Exit":
-        connection.end(err => console.log("Goodbye"));
-        break;
+        case "View Roles":
+          viewRoles();
+          break;
+        case "View Employees":
+          viewEmployees();
+          break;
+        case "Exit":
+          connection.end(err => console.log("Goodbye"));
+          break;
       }
     });
 }
 
 function viewDepartments() {
   connection.query("SELECT * FROM department", (err, res) => {
-    console.log(res);
-    main();
+    console.table(res);
+    returnHome();
   });
 }
 
 function viewRoles() {
   connection.query("SELECT * FROM role", (err, res) => {
-    console.log(res);
-    main();
+    console.table(res);
+    returnHome();
   });
 }
 
 function viewEmployees() {
   connection.query("SELECT * FROM employee", (err, res) => {
-    console.log(res);
-    main();
+    console.table(res);
+    returnHome();
   });
+}
+
+function returnHome() {
+  inquirer
+    .prompt({
+      name: "returnChoice",
+      type: "list",
+      message: " ",
+      choices: ["Continue", "Exit"]
+    })
+    .then(answer => {
+      switch(answer.returnChoice){
+        case "Continue":
+          main();
+          break;
+
+        case "Exit":
+          connection.end(err => console.log("Goodbye"));
+          break;
+      }
+    });
+
 }
