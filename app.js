@@ -155,7 +155,7 @@ function addRole() {
 async function addEmployee() {
   await getDepartmentNames();
   await getRoleNames();
-  inquirer
+  const answers = await inquirer
     .prompt([
       {
         name: "firstName",
@@ -180,16 +180,18 @@ async function addEmployee() {
         choices: titleArray
       }
     ])
-    .then(answer => {
-      connection.query("INSERT INTO employee (first_name, last_name) VALUE ('"+answer.firstName.trim()+"','"+answer.lastName.trim()+"')" ,err => {
-        if (err) throw err;
-        viewEmployees();
+    let query = "INSERT INTO employee (first_name, last_name, role_id, department_id)" 
+    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.department+"','"+answers.role+"')";
+    
+    connection.query( query , err => {
+      if (err) throw err;
+      viewEmployees();
     })
-  });
+  
 }
 
 async function getDepartmentNames() {
-  const queryArray = await queryPromise("SELECT name FROM department");
+  const queryArray = await queryPromise("SELECT * FROM department");
   departmentArray = queryArray.map(department => department.name);
 }
 
