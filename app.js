@@ -1,8 +1,10 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const chalk = require('chalk');
 const cTable = require('console.table');
-const testName = "test";
+const util = require('util');
+
+let departmentArray = [];
+let titleArray = [];
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -14,8 +16,12 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
   if (err) throw err;
+  // test();
   main();
 });
+
+// creating a promise based query for async/await functions
+const queryPromise = util.promisify(connection.query).bind(connection);
 
 function main() {
   console.log("hello working");
@@ -123,6 +129,7 @@ function addDepartment() {
     })
   });
 }
+
 function addRole() {
   inquirer
     .prompt([
@@ -145,7 +152,9 @@ function addRole() {
   });
 }
 
-function addEmployee() {
+async function addEmployee() {
+  await getDepartmentNames();
+  await getRoleNames();
   inquirer
     .prompt([
       {
@@ -157,6 +166,18 @@ function addEmployee() {
         name: "lastName",
         type: "input",
         message: "What is the last name of the employee?"
+      },
+      {
+        name: "department",
+        type: "list",
+        message: "What department do they work in?",
+        choices: departmentArray
+      },
+      {
+        name: "role",
+        type: "list",
+        message: "What is the employee's title?",
+        choices: titleArray
       }
     ])
     .then(answer => {
@@ -165,4 +186,14 @@ function addEmployee() {
         viewEmployees();
     })
   });
+}
+
+async function getDepartmentNames() {
+  const queryArray = await queryPromise("SELECT name FROM department");
+  departmentArray = queryArray.map(department => department.name);
+}
+
+async function getRoleNames() {
+  const queryArray = await queryPromise("SELECT title FROM role");
+  titleArray = queryArray.map(role => role.title);
 }
