@@ -153,46 +153,51 @@ function addRole() {
 }
 
 async function addEmployee() {
-  await getDepartmentNames();
-  await getRoleNames();
-  const answers = await inquirer
-    .prompt([
-      {
-        name: "firstName",
-        type: "input",
-        message: "What is the first name of the employee?"
-      },
-      {
-        name: "lastName",
-        type: "input",
-        message: "What is the last name of the employee?"
-      },
-      {
-        name: "department",
-        type: "list",
-        message: "What department do they work in?",
-        choices: departmentArray
-      },
-      {
-        name: "role",
-        type: "list",
-        message: "What is the employee's title?",
-        choices: titleArray
-      }
-    ])
+  try {
+    await getDepartmentNames();
+    await getRoleNames();
+    const answers = await inquirer
+      .prompt([
+        {
+          name: "firstName",
+          type: "input",
+          message: "What is the first name of the employee?"
+        },
+        {
+          name: "lastName",
+          type: "input",
+          message: "What is the last name of the employee?"
+        },
+        {
+          name: "department",
+          type: "list",
+          message: "What department do they work in?",
+          choices: departmentArray
+        },
+        {
+          name: "role",
+          type: "list",
+          message: "What is the employee's title?",
+          choices: titleArray
+        }
+      ])
+      
     let query = "INSERT INTO employee (first_name, last_name, role_id, department_id)" 
-    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.department+"','"+answers.role+"')";
+    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.role+"','"+answers.department+"')";
     
-    connection.query( query , err => {
-      if (err) throw err;
-      viewEmployees();
-    })
-  
+    await queryPromise(query);
+    
+    viewEmployees();
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function getDepartmentNames() {
   const queryArray = await queryPromise("SELECT * FROM department");
-  departmentArray = queryArray.map(department => department.name);
+  departmentArray = queryArray.map(department => department);
+  console.log(departmentArray);
 }
 
 async function getRoleNames() {
