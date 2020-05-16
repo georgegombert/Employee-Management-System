@@ -156,6 +156,8 @@ async function addEmployee() {
   try {
     await getDepartmentNames();
     await getRoleNames();
+    console.log(departmentArray);
+    console.log(titleArray);
     const answers = await inquirer
       .prompt([
         {
@@ -172,18 +174,18 @@ async function addEmployee() {
           name: "department",
           type: "list",
           message: "What department do they work in?",
-          choices: departmentArray
+          choices: departmentArray.map(department => department.name)
         },
         {
           name: "role",
           type: "list",
           message: "What is the employee's title?",
-          choices: titleArray
+          choices: titleArray.map(role => role.title)
         }
       ])
-      
-    let query = "INSERT INTO employee (first_name, last_name, role_id, department_id)" 
-    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.role+"','"+answers.department+"')";
+    
+    let query = "INSERT INTO employee (first_name, last_name, department)" 
+    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.department+"')";
     
     await queryPromise(query);
     
@@ -195,12 +197,18 @@ async function addEmployee() {
 }
 
 async function getDepartmentNames() {
-  const queryArray = await queryPromise("SELECT * FROM department");
-  departmentArray = queryArray.map(department => department);
-  console.log(departmentArray);
+  try {
+    departmentArray = await queryPromise("SELECT * FROM department");
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function getRoleNames() {
-  const queryArray = await queryPromise("SELECT title FROM role");
-  titleArray = queryArray.map(role => role.title);
+  try {
+    titleArray = await queryPromise("SELECT * FROM role");
+  } catch (error) {
+    console.log(error);
+  }
 }
