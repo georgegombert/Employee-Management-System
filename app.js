@@ -5,6 +5,7 @@ const util = require('util');
 
 let departmentArray = [];
 let titleArray = [];
+let employeeArray =[];
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -154,10 +155,8 @@ function addRole() {
 
 async function addEmployee() {
   try {
-    await getDepartmentNames();
     await getRoleNames();
-    console.log(departmentArray);
-    console.log(titleArray);
+    await getEmployeeNames();
     const answers = await inquirer
       .prompt([
         {
@@ -171,21 +170,23 @@ async function addEmployee() {
           message: "What is the last name of the employee?"
         },
         {
-          name: "department",
-          type: "list",
-          message: "What department do they work in?",
-          choices: departmentArray.map(department => department.name)
-        },
-        {
           name: "role",
           type: "list",
           message: "What is the employee's title?",
           choices: titleArray.map(role => role.title)
+        },
+        {
+          name: "manager",
+          type: "list",
+          message: "What is the employee's title?",
+          choices: employeeArray.map(employee => employee.first_name)
         }
       ])
     
-    let query = "INSERT INTO employee (first_name, last_name, department)" 
-    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+answers.department+"')";
+    const titleId = titleArray.filter(role => role.title === answers.role);
+
+    let query = "INSERT INTO employee (first_name, last_name, title_id)" 
+    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+titleId[0].id+"')";
     
     await queryPromise(query);
     
@@ -199,7 +200,6 @@ async function addEmployee() {
 async function getDepartmentNames() {
   try {
     departmentArray = await queryPromise("SELECT * FROM department");
-
   } catch (error) {
     console.log(error);
   }
@@ -208,6 +208,14 @@ async function getDepartmentNames() {
 async function getRoleNames() {
   try {
     titleArray = await queryPromise("SELECT * FROM role");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getEmployeeNames() {
+  try {
+    employeeArray = await queryPromise("SELECT * FROM employee");
   } catch (error) {
     console.log(error);
   }

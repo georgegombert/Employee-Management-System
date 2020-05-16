@@ -21,7 +21,8 @@ CREATE TABLE employee (
 	id INT NOT NULL auto_increment,
     first_name VARCHAR(30) NULL,
     last_name VARCHAR(30) NULL,
-    role_id INT NULL,
+    title_id INT NULL,
+    department VARCHAR(30) NULL,
     manager_id INT NULL,
     PRIMARY KEY (id)
 );
