@@ -73,21 +73,25 @@ function main() {
 }
 
 function viewDepartments() {
-  connection.query("SELECT * FROM department", (err, res) => {
+  connection.query("SELECT department_name FROM department", (err, res) => {
     console.table(res);
     returnHome();
   });
 }
 
 function viewRoles() {
-  connection.query("SELECT * FROM role", (err, res) => {
+  let query = "SELECT role.title, role.salary, department.department_name";
+  query += " FROM role, department";
+  query += " WHERE department.id = department_id";
+  
+  connection.query(query, (err, res) => {
     console.table(res);
     returnHome();
   });
 }
 
 function viewEmployees() {
-  let query = "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, employee.manager_id"
+  let query = "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.department_name, employee.manager_id"
   query += " FROM employee, role, department"
   query += " WHERE role.id = title_id AND department.id = department_id"
 
@@ -127,15 +131,16 @@ function addDepartment() {
       message: "What is the name of the new department?"
     })
     .then(answer => {
-      connection.query("INSERT INTO department (name) VALUE ('"+answer.departmentName.trim()+"')" ,err => {
+      connection.query("INSERT INTO department (department_name) VALUE ('"+answer.departmentName.trim()+"')" ,err => {
         if (err) throw err;
         viewDepartments();
     })
   });
 }
 
-function addRole() {
-  inquirer
+async function addRole() {
+  await getDepartmentNames();
+  const answer = await inquirer
     .prompt([
       {
         name: "roleName",
@@ -146,14 +151,23 @@ function addRole() {
         name: "roleSalary",
         type: "input",
         message: "Enter the salary for this role:"
+      },
+      {
+        name: "department",
+        type: "list",
+        message: "What department does this role belong to?",
+        choices: departmentArray.map(department => department.department_name)
       }
     ])
-    .then(answer => {
-      connection.query("INSERT INTO role (title, salary) VALUE ('"+answer.roleName.trim()+"','"+answer.roleSalary+"')" ,err => {
-        if (err) throw err;
-        viewRoles();
-    })
-  });
+    const departmentId = departmentArray.filter(department => department.department_name === answer.department);
+    
+    let query = "INSERT INTO role (title, salary, department_id)" 
+    query += " VALUE ('"+answer.roleName.trim()+"','"+answer.roleSalary+"',"+departmentId[0].id+")"
+    
+    await queryPromise(query);
+    
+    viewRoles();
+  
 }
 
 async function addEmployee() {
