@@ -17,7 +17,6 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
   if (err) throw err;
-  // test();
   main();
 });
 
@@ -38,6 +37,7 @@ function main() {
         "View Departments",
         "View Roles",
         "View Employees",
+        "View Employees by Mangager",
         "Update Employee Role",       
         "Update Employee Manager",       
         "Exit"
@@ -66,6 +66,9 @@ function main() {
           break;
         case "View Employees":
           viewEmployees();
+          break;
+        case "View Employees by Mangager":
+          viewByManager();
           break;
         case "Update Employee Role":
           updateEmployeeRole();
@@ -318,5 +321,31 @@ async function updateEmployeeManager() {
     viewEmployees();
   } catch (error) {
     throw error;
+  }
+}
+
+async function viewByManager() {
+  try {
+    await getEmployeeNames();
+    const employeeChoices = employeeArray.map(employee => employee.first_name +" "+ employee.last_name);
+    employeeChoices.push("None");
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Select Manager to view their team:",
+          choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
+        }
+      ])
+    const employeeAnswer = answer.employee.split(" ");
+    const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+    
+
+    let query = "SELECT employee.first_name, employee.last_name FROM employee WHERE employee.manager_id = "+employeeId[0].id+";";
+    const res = await queryPromise(query);
+    console.table(res);
+  } catch (error) {
+    throw error
   }
 }
