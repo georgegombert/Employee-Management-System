@@ -344,9 +344,13 @@ async function viewByManager() {
 
     let query = "SELECT employee.first_name, employee.last_name FROM employee WHERE employee.manager_id = "+employeeId[0].id+";";
     const res = await queryPromise(query);
-    console.log(`The employees that are on ${answer.employee}'s team are:`);
-    console.table(res.map(name => `${name.first_name} ${name.last_name}`));
-    // console.table(res);
+
+    if (res.length === 0){
+      console.log(`\n${answer.employee} does not manage anyone`);
+    } else{
+      console.log(`\nThe employees that are on ${answer.employee}'s team are:`);
+      console.table(res.map(name => `${name.first_name} ${name.last_name}`));
+    }
     returnHome();
   } catch (error) {
     throw error
