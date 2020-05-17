@@ -56,7 +56,6 @@ function main() {
           break;
 
         case "View Departments":
-          console.log(answer.userChoice);
           viewDepartments();
           break;
 
@@ -88,7 +87,11 @@ function viewRoles() {
 }
 
 function viewEmployees() {
-  connection.query("SELECT * FROM employee", (err, res) => {
+  let query = "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, employee.manager_id"
+  query += " FROM employee, role, department"
+  query += " WHERE role.id = title_id AND department.id = department_id"
+
+  connection.query(query, (err, res) => {
     console.table(res);
     returnHome();
   });
@@ -184,6 +187,7 @@ async function addEmployee() {
           choices: employeeChoices
         }
       ])
+      
     // using inquirer answer to obtain title and manager id's from respective arrays
     const titleId = titleArray.filter(role => role.title === answers.role);
     let managerId = employeeArray.filter(manager => manager.first_name +" "+ manager.last_name === answers.manager);
