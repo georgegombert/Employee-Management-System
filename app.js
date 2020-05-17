@@ -39,6 +39,7 @@ function main() {
         "View Roles",
         "View Employees",
         "Update Employee Role",       
+        "Update Employee Manager",       
         "Exit"
       ]
     })
@@ -68,6 +69,9 @@ function main() {
           break;
         case "Update Employee Role":
           updateEmployeeRole();
+          break;
+        case "Update Employee Manager":
+          updateEmployeeManager();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -250,28 +254,69 @@ async function getEmployeeNames() {
 }
 
 async function updateEmployeeRole() {
-  await getEmployeeNames();
-  await getRoleNames();
-  const answer = await inquirer
-    .prompt([
-      {
-        name: "employee",
-        type: "list",
-        message: "Select employee you would like to update:",
-        choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
-      },
-      {
-        name: "newTitle",
-        type: "list",
-        message: "Select new title for employee:",
-        choices: titleArray.map(role => role.title)
-      }
-    ])
-  const employeeAnswer = answer.employee.split(" ");
-  const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+  try {
+    await getEmployeeNames();
+    await getRoleNames();
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Select employee you would like to update:",
+          choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
+        },
+        {
+          name: "newTitle",
+          type: "list",
+          message: "Select new title for employee:",
+          choices: titleArray.map(role => role.title)
+        }
+      ])
+    const employeeAnswer = answer.employee.split(" ");
+    const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+    
+    const titleId = titleArray.filter(role => role.title === answer.newTitle);
+    let query = "UPDATE employee SET title_id= "+titleId[0].id+" WHERE employee.id = "+employeeId[0].id+";";
+    await queryPromise(query);
+    viewEmployees();
+  } catch (error) {
+    throw error;
+  }
   
-  const titleId = titleArray.filter(role => role.title === answer.newTitle);
-  let query = "UPDATE employee SET title_id= "+titleId[0].id+" WHERE employee.id = "+employeeId[0].id+";";
-  await queryPromise(query);
-  viewEmployees();
+}
+
+async function updateEmployeeManager() {
+  try {
+    await getEmployeeNames();
+    const employeeChoices = employeeArray.map(employee => employee.first_name +" "+ employee.last_name);
+    employeeChoices.push("None");
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Select employee you would like to update:",
+          choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
+        },
+        {
+          name: "newManager",
+          type: "list",
+          message: "Select new manager for employee:",
+          choices: employeeChoices
+        }
+      ])
+    const employeeAnswer = answer.employee.split(" ");
+    const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+    
+    let managerId = employeeArray.filter(manager => manager.first_name +" "+ manager.last_name === answer.newManager);
+    if(answer.newManager === "None"){
+      managerId =[{id: "NULL"}];
+    }
+
+    let query = "UPDATE employee SET manager_id= "+managerId[0].id+" WHERE employee.id = "+employeeId[0].id+";";
+    await queryPromise(query);
+    viewEmployees();
+  } catch (error) {
+    throw error;
+  }
 }
