@@ -267,8 +267,11 @@ async function updateEmployeeRole() {
         choices: titleArray.map(role => role.title)
       }
     ])
+  const employeeAnswer = answer.employee.split(" ");
+  const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+  
   const titleId = titleArray.filter(role => role.title === answer.newTitle);
-  let query = "UPDATE employee SET title_id= "+titleId[0].id+" WHERE employee.id = 1;";
+  let query = "UPDATE employee SET title_id= "+titleId[0].id+" WHERE employee.id = "+employeeId[0].id+";";
   await queryPromise(query);
   viewEmployees();
 }
