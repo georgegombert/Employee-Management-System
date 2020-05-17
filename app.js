@@ -201,7 +201,7 @@ async function addEmployee() {
         {
           name: "manager",
           type: "list",
-          message: "What is the employee's title?",
+          message: "Select employee manager (select none for no manager)",
           choices: employeeChoices
         }
       ])
@@ -267,5 +267,8 @@ async function updateEmployeeRole() {
         choices: titleArray.map(role => role.title)
       }
     ])
-  let query = "UPDATE employee SET title_id= 3 WHERE employee.id = 1;"
+  const titleId = titleArray.filter(role => role.title === answer.newTitle);
+  let query = "UPDATE employee SET title_id= "+titleId[0].id+" WHERE employee.id = 1;";
+  await queryPromise(query);
+  viewEmployees();
 }
