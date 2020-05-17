@@ -157,6 +157,8 @@ async function addEmployee() {
   try {
     await getRoleNames();
     await getEmployeeNames();
+    const employeeChoices = employeeArray.map(employee => employee.first_name +" "+ employee.last_name);
+    employeeChoices.push("None");
     const answers = await inquirer
       .prompt([
         {
@@ -179,14 +181,18 @@ async function addEmployee() {
           name: "manager",
           type: "list",
           message: "What is the employee's title?",
-          choices: employeeArray.map(employee => employee.first_name)
+          choices: employeeChoices
         }
       ])
-    
+    // using inquirer answer to obtain title and manager id's from respective arrays
     const titleId = titleArray.filter(role => role.title === answers.role);
-
-    let query = "INSERT INTO employee (first_name, last_name, title_id)" 
-    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"','"+titleId[0].id+"')";
+    let managerId = employeeArray.filter(manager => manager.first_name +" "+ manager.last_name === answers.manager);
+    if(answers.manager === "None"){
+      managerId =[{id: "NULL"}];
+    }
+    
+    let query = "INSERT INTO employee (first_name, last_name, title_id, manager_id)" 
+    query += "VALUE ('"+answers.firstName.trim()+"','"+answers.lastName.trim()+"',"+titleId[0].id+","+managerId[0].id+")";
     
     await queryPromise(query);
     
