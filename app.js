@@ -40,6 +40,7 @@ function main() {
         "View Employees by Mangager",
         "Update Employee Role",       
         "Update Employee Manager",       
+        "Delete Employee",      
         "Exit"
       ]
     })
@@ -75,6 +76,9 @@ function main() {
           break;
         case "Update Employee Manager":
           updateEmployeeManager();
+          break;
+        case "Delete Employee":
+          deleteEmployee();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -354,5 +358,28 @@ async function viewByManager() {
     returnHome();
   } catch (error) {
     throw error
+  }
+}
+
+async function deleteEmployee() {
+  try {
+    await getEmployeeNames();
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Select employee you would like to remove:",
+          choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
+        },
+      ])
+    const employeeAnswer = answer.employee.split(" ");
+    const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
+    
+    let query = "DELETE FROM employee WHERE employee.id = "+employeeId[0].id+";";
+    await queryPromise(query);
+    viewEmployees();
+  } catch (error) {
+    throw error;
   }
 }
