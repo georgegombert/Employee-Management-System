@@ -251,15 +251,21 @@ async function getEmployeeNames() {
 
 async function updateEmployeeRole() {
   await getEmployeeNames();
-  console.log(employeeArray.map(name => ""+name.first_name+" "+name.last_name+""));
+  await getRoleNames();
   const answer = await inquirer
     .prompt([
       {
         name: "employee",
         type: "list",
-        message: "Select employee you would like to update",
+        message: "Select employee you would like to update:",
         choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
       },
+      {
+        name: "newTitle",
+        type: "list",
+        message: "Select new title for employee:",
+        choices: titleArray.map(role => role.title)
+      }
     ])
-    
+  let query = "UPDATE employee SET title_id= 3 WHERE employee.id = 1;"
 }
