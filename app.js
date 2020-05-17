@@ -37,7 +37,8 @@ function main() {
         "Add Employee",
         "View Departments",
         "View Roles",
-        "View Employees",       
+        "View Employees",
+        "Update Employee Role",       
         "Exit"
       ]
     })
@@ -64,6 +65,9 @@ function main() {
           break;
         case "View Employees":
           viewEmployees();
+          break;
+        case "Update Employee Role":
+          updateEmployeeRole();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -243,4 +247,19 @@ async function getEmployeeNames() {
   } catch (error) {
     console.log(error);
   }
+}
+
+async function updateEmployeeRole() {
+  await getEmployeeNames();
+  console.log(employeeArray.map(name => ""+name.first_name+" "+name.last_name+""));
+  const answer = await inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "list",
+        message: "Select employee you would like to update",
+        choices: employeeArray.map(name => ""+name.first_name+" "+name.last_name+"")
+      },
+    ])
+    
 }
