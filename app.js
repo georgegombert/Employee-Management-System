@@ -41,6 +41,7 @@ function main() {
         "Update Employee Role",       
         "Update Employee Manager",       
         "Delete Employee",      
+        "Delete Role",      
         "Exit"
       ]
     })
@@ -79,6 +80,9 @@ function main() {
           break;
         case "Delete Employee":
           deleteEmployee();
+          break;
+        case "Delete Role":
+          deleteRole();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -377,6 +381,28 @@ async function deleteEmployee() {
     const employeeId = employeeArray.filter(employee => employee.first_name === employeeAnswer[0] && employee.last_name === employeeAnswer[1]);
     
     let query = "DELETE FROM employee WHERE employee.id = "+employeeId[0].id+";";
+    await queryPromise(query);
+    viewEmployees();
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteRole() {
+  try {
+    await getRoleNames();
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "role",
+          type: "list",
+          message: "Select role you would like to remove:",
+          choices: titleArray.map(role => role.title)
+        },
+      ])
+    const titleId = titleArray.filter(role => role.title === answer.role);
+    
+    let query = "DELETE FROM role WHERE role.id = "+titleId[0].id+";";
     await queryPromise(query);
     viewEmployees();
   } catch (error) {
