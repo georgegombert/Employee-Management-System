@@ -5,7 +5,7 @@ USE myCompany_DB;
 
 CREATE TABLE department (
 	id INT NOT NULL auto_increment,
-    name VARCHAR(30) NULL,
+    department_name VARCHAR(30) NULL,
     PRIMARY KEY (id)
 );
 
@@ -22,7 +22,8 @@ CREATE TABLE employee (
     first_name VARCHAR(30) NULL,
     last_name VARCHAR(30) NULL,
     title_id INT NULL,
-    department VARCHAR(30) NULL,
     manager_id INT NULL,
     PRIMARY KEY (id)
 );
+
+
