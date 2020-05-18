@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require('console.table');
 const util = require('util');
+const figlet = require('figlet');
 
 let departmentArray = [];
 let titleArray = [];
@@ -17,14 +18,21 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
   if (err) throw err;
-  main();
+  else{
+    init();
+  }
 });
 
 // creating a promise based query for async/await functions
 const queryPromise = util.promisify(connection.query).bind(connection);
+const figletPromise = util.promisify(figlet);
+
+async function init() {
+  await printWelcome();
+  main();
+}
 
 function main() {
-  console.log("hello working");
   inquirer
     .prompt({
       name: "userChoice",
@@ -437,4 +445,16 @@ async function deleteDepartment() {
   } catch (error) {
     throw error;
   }
+}
+
+async function printWelcome(){
+  const res = await figletPromise('Welcome to EMS!');
+    if (res.err) {
+        console.log('Something went wrong...');
+        console.dir(err);
+        return;
+    }
+    console.log("-".repeat(80));
+    console.log(res);
+    console.log("-".repeat(80));
 }
