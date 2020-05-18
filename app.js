@@ -51,6 +51,7 @@ function main() {
         "Delete Employee",      
         "Delete Role",      
         "Delete Department",      
+        "Get Department Budget",      
         "Exit"
       ]
     })
@@ -95,6 +96,9 @@ function main() {
           break;
         case "Delete Department":
           deleteDepartment();
+          break;
+        case "Get Department Budget":
+          departmentBudget();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -445,6 +449,25 @@ async function deleteDepartment() {
   } catch (error) {
     throw error;
   }
+}
+
+async function departmentBudget() {
+  await getDepartmentNames();
+  const answer = await inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "list",
+        message: "Select department to see it's budget:",
+        choices: departmentArray.map(department => department.department_name)
+      }
+    ])
+  const departmentId = departmentArray.filter(department => department.department_name === answer.department);
+  let query = "SELECT salary FROM role WHERE role.department_id = "+departmentId[0].id+";";
+  let res = await queryPromise(query);
+  res = res.map(salary => salary.salary).reduce( (total, index) => total + index);
+  console.log(`The total budget for the ${answer.department} is $${res}`);
+  returnHome();
 }
 
 async function printWelcome(){
