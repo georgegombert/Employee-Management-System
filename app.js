@@ -42,6 +42,7 @@ function main() {
         "Update Employee Manager",       
         "Delete Employee",      
         "Delete Role",      
+        "Delete Department",      
         "Exit"
       ]
     })
@@ -83,6 +84,9 @@ function main() {
           break;
         case "Delete Role":
           deleteRole();
+          break;
+        case "Delete Department":
+          deleteDepartment();
           break;
         case "Exit":
           connection.end(err => console.log("Goodbye"));
@@ -405,6 +409,31 @@ async function deleteRole() {
     let query = "DELETE FROM role WHERE role.id = "+titleId[0].id+";";
     await queryPromise(query);
     viewEmployees();
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteDepartment() {
+  try {
+    await getDepartmentNames();
+    const answer = await inquirer
+      .prompt([
+        {
+          name: "department",
+          type: "list",
+          message: "Select department you would like to remove:",
+          choices: departmentArray.map(department => department.department_name)
+        }
+      ])
+    const departmentId = departmentArray.filter(department => department.department_name === answer.department);
+    
+    let query = "DELETE FROM department WHERE department.id = "+departmentId[0].id+";";
+    
+    await queryPromise(query);
+    
+    viewEmployees();
+  
   } catch (error) {
     throw error;
   }
