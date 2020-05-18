@@ -487,7 +487,7 @@ async function departmentBudget() {
     // Using array methods to sum up the returned salaries and store them in the res variable
     res = res.map(salary => salary.salary).reduce( (total, index) => total + index);
 
-    console.log(`The total budget for the ${answer.department} is $${res}`);
+    console.log(`\n\n The total budget for the ${answer.department} is $${res}\n`);
     returnHome();
 
   } catch(error){
