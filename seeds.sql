@@ -8,7 +8,3 @@ VALUES ('Sales Lead', '60000', 1), ('Sales Associate', '40000', 1), ('Project Ma
 INSERT INTO employee (first_name, last_name, title_id, manager_id)
 VALUES ('Atticus', 'King', 1, 3), ('Langston', 'Deveraux', 2, 1), ('Larchmont', 'VanDyke', 3, 1), 
 ('Delores', 'Price', 4, 7), ('Emelda', 'Cherry', 5, 7), ('Norse', 'Regan', 6, 5), ('Dominick', 'Assange', 7, 1);
-
-SELECT employee.first_name, employee.last_name, role.title, role.salary, department.department_name, employee.manager_id
-FROM employee, role, department
-WHERE role.id = title_id AND department.id = department_id
