@@ -1,7 +1,9 @@
 ## Employee Management System
   ![Version](https://img.shields.io/badge/Version-1.0-green)
   ****
-  
+
+  ![program](./screen-shot.png)
+
   ### Description
   A node and SQL application that is designed to manage employees at a small to mid-size company. The application allows you to manage your employees, departments, and positions within the company. 
   ### Table of Contents
